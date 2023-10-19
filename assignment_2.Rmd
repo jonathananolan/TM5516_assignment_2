@@ -128,6 +128,11 @@ data_nice_labels <- data %>%
 
 ```
 
+
+To aid reproducibility, the source rmarkdown for this assignment has been provided online at 
+
+https://github.com/jonathananolan/TM5516_assignment_2
+
 # Question 1 -  Summary statistics
 ```{r}
 
@@ -522,7 +527,8 @@ This model underwent several robustness tests and their results in figure 4. In 
 
 ```{r}
 
-p <- autoplot(output) 
+p <- autoplot(output) +theme_value
+  
 gridExtra::grid.arrange(grobs = p@plots, top = "Figure 4 - Robustness checks for linear model")
 
 ```

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.19)  19 OCT 2023 04:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.19)  19 OCT 2023 04:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -644,40 +644,40 @@ File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 <assignment_2_files/figure-latex/pressure-1.pdf, id=108, 469.755pt x 325.215pt>
 File: assignment_2_files/figure-latex/pressure-1.pdf Graphic file (type pdf)
 <use assignment_2_files/figure-latex/pressure-1.pdf>
-Package pdftex.def Info: assignment_2_files/figure-latex/pressure-1.pdf  used on input line 229.
+Package pdftex.def Info: assignment_2_files/figure-latex/pressure-1.pdf  used on input line 234.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (16.75386pt too wide) in paragraph at lines 229--230
+Overfull \hbox (16.75386pt too wide) in paragraph at lines 234--235
 [][] 
  []
 
 
-Overfull \hbox (1.08665pt too wide) in paragraph at lines 238--238
+Overfull \hbox (1.08665pt too wide) in paragraph at lines 243--243
 []|\T1/lmr/bx/n/7 Exercise 
  []
 
 
-Overfull \hbox (1.08665pt too wide) in paragraph at lines 238--238
+Overfull \hbox (1.08665pt too wide) in paragraph at lines 243--243
 []|\T1/lmr/bx/n/7 Exercise 
  []
 
 
-Overfull \hbox (8.02036pt too wide) in paragraph at lines 238--238
+Overfull \hbox (8.02036pt too wide) in paragraph at lines 243--243
 []|\T1/lmr/bx/n/7 Steps/day 
  []
 
 
-Overfull \hbox (8.02036pt too wide) in paragraph at lines 238--238
+Overfull \hbox (8.02036pt too wide) in paragraph at lines 243--243
 []|\T1/lmr/bx/n/7 Steps/day 
  []
 
 
-Overfull \hbox (3.21481pt too wide) in paragraph at lines 238--239
+Overfull \hbox (3.21481pt too wide) in paragraph at lines 243--244
 []|\T1/lmr/bx/n/7 Midterm 
  []
 
 
-Overfull \hbox (6.86331pt too wide) in paragraph at lines 236--261
+Overfull \hbox (6.86331pt too wide) in paragraph at lines 241--266
  [][] 
  []
 
@@ -688,35 +688,35 @@ Overfull \hbox (2.22221pt too wide) has occurred while \output is active
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\<def>-command' on input line 261.
+(hyperref)                removing `\<def>-command' on input line 266.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\cnotenum' on input line 261.
+(hyperref)                removing `\cnotenum' on input line 266.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\<def>-command' on input line 261.
+(hyperref)                removing `\<def>-command' on input line 266.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@corref' on input line 261.
+(hyperref)                removing `\@corref' on input line 266.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\<let>-command' on input line 261.
+(hyperref)                removing `\<let>-command' on input line 266.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\comma' on input line 261.
+(hyperref)                removing `\comma' on input line 266.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\<def>-command' on input line 261.
+(hyperref)                removing `\<def>-command' on input line 266.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\@fnmark' on input line 261.
+(hyperref)                removing `\@fnmark' on input line 266.
 
 [1
 
@@ -727,25 +727,25 @@ Overfull \vbox (22.87321pt too high) has occurred while \output is active []
 pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.261 \end{table}
+l.266 \end{table}
                   <./assignment_2_files/figure-latex/pressure-1.pdf>]
 <assignment_2_files/figure-latex/distribution of results`-1.pdf, id=197, 469.755pt x 325.215pt>
 File: assignment_2_files/figure-latex/distribution of results`-1.pdf Graphic file (type pdf)
 <use assignment_2_files/figure-latex/distribution of results`-1.pdf>
-Package pdftex.def Info: assignment_2_files/figure-latex/distribution of results`-1.pdf  used on input line 281.
+Package pdftex.def Info: assignment_2_files/figure-latex/distribution of results`-1.pdf  used on input line 286.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (16.75386pt too wide) in paragraph at lines 281--282
+Overfull \hbox (16.75386pt too wide) in paragraph at lines 286--287
 [][] 
  []
 
 <assignment_2_files/figure-latex/qq plot-1.pdf, id=198, 469.755pt x 325.215pt>
 File: assignment_2_files/figure-latex/qq plot-1.pdf Graphic file (type pdf)
 <use assignment_2_files/figure-latex/qq plot-1.pdf>
-Package pdftex.def Info: assignment_2_files/figure-latex/qq plot-1.pdf  used on input line 283.
+Package pdftex.def Info: assignment_2_files/figure-latex/qq plot-1.pdf  used on input line 288.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (16.75386pt too wide) in paragraph at lines 283--284
+Overfull \hbox (16.75386pt too wide) in paragraph at lines 288--289
 [][] 
  []
 
@@ -753,46 +753,46 @@ Overfull \hbox (16.75386pt too wide) in paragraph at lines 283--284
 pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.285 S
+l.290 S
        ince we are comparing three different categories, a one way anova test <./assignment_2_files/figure-latex/distribution of results`-1.pdf>] [4{/Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc} <./assignment_2_files/figure-latex/qq plot-1.pdf>] [5
 pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.484 \end{table}
+l.489 \end{table}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.484 \end{table}
+l.489 \end{table}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{table.5}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.484 \end{table}
+l.489 \end{table}
                  ]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 565.
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 565.
+(Font)              <9> on input line 570.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 570.
 (/Users/jonathannolan/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [6
 pdfTeX warning (ext4): destination with the same identifier (name{table.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.568 \end{table}
+l.573 \end{table}
                  
 pdfTeX warning (ext4): destination with the same identifier (name{table.7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.568 \end{table}
+l.573 \end{table}
                  {/Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}]
 <assignment_2_files/figure-latex/unnamed-chunk-12-1.pdf, id=259, 469.755pt x 325.215pt>
 File: assignment_2_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (type pdf)
 <use assignment_2_files/figure-latex/unnamed-chunk-12-1.pdf>
-Package pdftex.def Info: assignment_2_files/figure-latex/unnamed-chunk-12-1.pdf  used on input line 579.
+Package pdftex.def Info: assignment_2_files/figure-latex/unnamed-chunk-12-1.pdf  used on input line 584.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
-Overfull \hbox (16.75386pt too wide) in paragraph at lines 579--580
+Overfull \hbox (16.75386pt too wide) in paragraph at lines 584--585
 [][] 
  []
 
@@ -800,7 +800,7 @@ Overfull \hbox (16.75386pt too wide) in paragraph at lines 579--580
 pdfTeX warning (ext4): destination with the same identifier (name{table.8}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.589 \end{document}
+l.594 \end{document}
                     {/Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc} <./assignment_2_files/figure-latex/unnamed-chunk-12-1.pdf>] [8] (./assignment_2.aux)
  ***********
 LaTeX2e <2023-06-01> patch level 1
@@ -821,7 +821,7 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  72i,15n,79p,495b,477s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx7.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr5.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr6.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr9.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri7.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri8.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></Users/jonathannolan/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt8.pfb>
-Output written on assignment_2.pdf (8 pages, 454626 bytes).
+Output written on assignment_2.pdf (8 pages, 454120 bytes).
 PDF statistics:
  380 PDF objects out of 1000 (max. 8388607)
  320 compressed objects within 4 object streams
