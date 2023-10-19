@@ -1,0 +1,533 @@
+---
+title: Assignment 2 - TM5516
+author:
+  - name: Jonathan Nolan
+    email: jonathan.a.nolan@gmail.com
+    affiliation: James Cook University
+    correspondingauthor: true
+    footnote: 1
+address:
+  - code: School of Public Health
+    organization: James Cook University
+    city: Townsville
+    state: Queensland
+    country: Australia
+footnote:
+  - code: 1
+    text: "jc975847"
+keywords: 
+  - heart rate
+  - student performance
+  - student age
+journal: "New England Journal of Medicine"
+date: "`r Sys.Date()`"
+linenumbers: false
+numbersections: true
+biblio-style: elsarticle-harv # author year style for natbib - use 'elsarticle-num' or 'elsarticle-num-names' for numbered scheme
+classoption: preprint, 3p, authoryear # remove authoryear is not using `elsarticle-harv`
+# Use a CSL with `citation_package = "default"`
+# csl: https://www.zotero.org/styles/elsevier-harvard
+output: 
+  rticles::elsevier_article:
+    keep_tex: true
+    citation_package: natbib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE,echo = F) 
+
+library(tidyverse)
+library(corrplot)
+library(Hmisc)
+library(gtsummary)
+library(kableExtra)
+library(moments)
+library(broom)
+library(ggfortify)
+file_path <- "data/Smartwatch_StudentData_SP2.sav"
+data <- haven::read_spss(file_path)
+source_data_sj <- sjlabelled::read_spss(file_path)
+
+nice_labels_lookup <- c(
+          `Watch brand` = "watch_brand",
+           Age = "age",
+          `Resting heart rate during semester (BPM)` = "rest_hr_dur_sem",
+          `Resting heart rate outside of semester (BPM)` = "rest_hr_out_sem",
+          `Program` = "uni_prog",
+          `Midterm grade (%)` = 'midterm_grd',
+          `Final grade (%)` = "final_grd",
+         `Steps per day during semester (average)` = "steps_dur_sem",
+         `Steps per day outside of semester (average)` = "steps_out_sem",
+         `Hours of sleep per day during semester (average)` = "sleep_dur_sem",
+         `Hours of sleep per day outside semester (average)` = "sleep_out_sem",
+         `Exercise during semsester (minutes per week)` = "exercise_dur_sem",
+         `Exercise outside of semester (minutes per week)` = "exercise_out_sem",
+         `Satisfaction with university` = "uni_satisfaction",
+         `Completelty satisfied with university (binary)` = "uni_satisfaction_num",
+         `Stress level during semester (1-10 scale)` = "stress_level",
+         `Time spent standing outside of semester (minutes per day)` = "standing_out_sem",
+         `VO2 max outside of semester` = "vo2max_out_sem",
+         `Work hours outside of semester` = "work_hours_out_sem")
+
+short_labels_lookup <- c(
+          `Watch` = "watch_brand",
+           Age = "age",
+          `Resting HR (sem)` = "rest_hr_dur_sem",
+          `Resting HR (non-sem)` = "rest_hr_out_sem",
+          `Program` = "uni_prog",
+          `Midterm grade` = 'midterm_grd',
+          `Final grade` = "final_grd",
+         `Steps/day (sem)` = "steps_dur_sem",
+         `Steps/day (non-sem)` = "steps_out_sem",
+         `Sleep (sem)` = "sleep_dur_sem",
+         `Sleep (non-sem)` = "sleep_out_sem",
+         `Exercise hrs (sem)` = "exercise_dur_sem",
+         `Exercise hrs (non-sem)` = "exercise_out_sem",
+         `Uni satisfaction` = "uni_satisfaction",
+         `Uni satisfaction (binary)` = "uni_satisfaction_num",
+         `Stress (sem)` = "stress_level",
+         `Standing mins (non-sem)` = "standing_out_sem",
+         `VO2 max (non-sem)` = "vo2max_out_sem",
+         `Work hrs (non-sem)` = "work_hours_out_sem")
+
+nice_labels <- function (x){
+  
+  x %>% rename(any_of(nice_labels_lookup))
+}
+
+short_labels <- function (x){
+  
+  x %>% rename(any_of(short_labels_lookup))
+}
+
+  paper_kable_style <- function(x){
+    x %>% 
+    kable_styling(latex_options = c("striped"),
+                  font_size = 7,
+                  full_width = F) %>% 
+      kableExtra::row_spec(0, bold = TRUE) 
+
+  }
+  
+data <- foreign::read.spss("data/Smartwatch_StudentData_SP2.sav",
+                           use.value.labels = T,
+                           to.data.frame = T,
+                           max.value.labels = 100) %>% 
+  janitor::clean_names() %>% 
+  mutate(watch_brnd = parse_number(watch_brnd), 
+         watch_brand = case_when(watch_brnd == 1 ~ "Apple",
+                                 watch_brnd == 2 ~ "Samsung",
+                                 watch_brnd == 3 ~ "Garmin",
+                                 watch_brnd == 4 ~ "Others"),
+         uni_satisfaction_num = parse_number(uni_satisfaction),
+         uni_satisfaction = fct_rev(if_else(uni_satisfaction_num == 1,"Completely satisfied","Not completely satisfied"))) %>% 
+  as_tibble()
+
+data_nice_labels <- data %>% 
+  nice_labels()
+
+```
+
+# Question 1 -  Summary statistics
+```{r}
+
+n_part <- data %>% nrow()
+watches <- data %>% group_by(watch_brand) %>% 
+  summarise(n=n())
+
+age_mean <- data %>% summarise(age = round(mean(age))) %>% pull(age)
+age_min <- data %>% summarise(age = round(min(age))) %>% pull(age)
+age_max <- data %>% summarise(age = round(max(age))) %>% pull(age)
+
+satis <- data %>% summarise(satisfied = round(mean(100*uni_satisfaction_num))) %>% pull(satisfied)
+
+rest_hr <- data %>% summarise(hr = round(mean(rest_hr_out_sem))) %>% pull(hr)
+steps <- data %>% summarise(hr = round(mean(steps_out_sem))) %>% pull(hr)
+exercise <- data %>% summarise(hr = round(mean(exercise_out_sem))) %>% pull(hr)
+
+worst_student <- data %>% summarise(final_grd = round(min(final_grd))) %>% pull(final_grd)
+best_student <- data %>% summarise(final_grd = round(max(final_grd))) %>% pull(final_grd)
+
+```
+
+A total of `r n_part` students across four JCU programs participated in the study, providing data in two surveys and from their smart watch. 
+
+
+The average age of participants was `r age_mean`. The youngest participant was `r age_min` and the oldest participant `r age_max`. Participants were spread across all programs, as shown in Table 1. `r satis`% of students were completely satisfied with University.  
+
+
+Participants had a average resting heart rate outside of semester of `r rest_hr`, took an average `r steps` per day and exercised `r exercise` minutes per week. 
+
+
+
+Samsung was the most popular watch brand, with `r watches %>% filter(watch_brand == "Samsung") %>% pull(n)` participants wearing this watch, while watches other than Samsung, Garmin or Apple were least popular, with only`r watches %>% filter(watch_brand == "Others") %>% pull(n)` wearing these brands. 
+
+Performance varied widely across the cohort, with the lowest participant scoring `r worst_student` and the best scoring `r best_student`. Full summary variables across each program are provided in Table 1. 
+
+```{r }
+ table_one_data <- data %>% select(age,
+                rest_hr_out_sem,
+                rest_hr_dur_sem,
+                uni_prog,
+                final_grd,
+                watch_brand,
+                uni_satisfaction,
+                steps_out_sem,
+                sleep_out_sem,
+                exercise_out_sem) %>% 
+  nice_labels()
+
+  table_one_data %>% 
+    tbl_summary(
+      by = Program,
+    type = all_continuous() ~ "continuous2",
+    statistic = all_continuous() ~ c("{median} ({p25}, {p75})", 
+                                     "{min}, {max}","{mean} ({sd})"),
+    missing = "no"
+  )  %>%
+    add_overall() %>% 
+    as_kable_extra(caption = "Summary statistics") %>%  
+    kable_styling(latex_options = c("striped", "scale_down")) 
+
+```
+
+# Quesiton 2 - Correlations between variables
+
+Pearson correlations for each variable are provided in Graph 1. Where a value is large and green it is suggestive of a positive correlation, whereas when values are large and red it is suggestive of a negative correlation. There appears to be a strong correlation between all measures of exercise and sleep both in and out of semester. Mid-term and final grade area also correlated. Resting heart-rate is negatively correlated with age. These data that made Graph 1 are also provided in table 2 below:
+
+
+
+```{r pressure, echo=FALSE}
+correlation_data <- data %>% 
+  select(age,sleep_dur_sem,
+         sleep_out_sem,
+         exercise_dur_sem,
+         exercise_out_sem,
+         #rest_hr_dur_sem,
+         rest_hr_out_sem,
+         steps_dur_sem,
+         steps_out_sem,
+         midterm_grd,
+         final_grd) %>% 
+  short_labels() 
+
+
+correlation_plot <- correlation_data %>%
+  corrr::correlate() %>% 
+    corrr::rplot(shape = 19, colors = c("red", "green")) + 
+  theme(axis.text.x = element_text(angle = 30,hjust=1,vjust=1))+
+  labs(title = "Figure 1 Correlation matrix")
+  
+correlation_plot
+theme_value <- ggplot_build(correlation_plot)$plot$theme
+```
+
+
+```{r}
+corr_dataframe <- 
+  correlation_data %>%
+  corrr::correlate() %>%
+  corrr::shave() %>%
+  as_tibble() %>%
+  select(-`Final grade`) %>% 
+  mutate(across(where(is.numeric),round,2),
+         across(everything(),as.character),
+         across(everything(),~replace_na(.,""))) 
+
+corr_dataframe %>% 
+  kable(caption = "Correlation between variables in the study",
+        escape=F,
+        row.names = F) %>%  
+  paper_kable_style() %>% 
+  column_spec(column = 3:10, width = ".44in")
+
+```
+
+# Question 3 - Relationship between University Program and Resting heart rate
+
+## Step one - Decide on most appropriate test
+
+To decide on the most appropriate statistical test, the data was first assessed for normality. Graphical assessment of data in Figure 2 suggest that there is some right-ward shift in the data. The QQ plot in Figure 3 also shows significant deviation from the QQ line. It is therefore not necessary to conduct other tests, and the data should be considered non-parametric. However since the sample size in all three groups is larger than 30, the Central Limit Theorem applies and we can utilise tests that usually rely on the data being normally distributed. 
+
+
+
+```{r distribution of results`}
+
+hr_data <- data %>% 
+  filter(uni_prog != "Dentistry") 
+
+hr_data %>% 
+  group_by(rest_hr_dur_sem,uni_prog) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  geom_bar(aes(x = rest_hr_dur_sem, y = n),
+           stat = "identity") +
+  facet_wrap(~uni_prog,ncol = 1) +
+  theme_value+
+  labs(x = "Resting heartrate during semester",
+       y = "Frequency")+
+  scale_y_continuous(breaks = c(0,5,10))+
+  labs(title = "Figure 2: Distribution of HR across programs")
+```
+
+
+```{r qq plot}
+
+hr_data %>% 
+  ggplot(aes(sample = rest_hr_dur_sem)) +
+  geom_qq()+
+  geom_qq_line()+
+  facet_wrap(~uni_prog,ncol = 1) +
+  theme_value+
+  labs(title = "Figure 3: QQ Plot")
+```
+
+Since we are comparing three different categories, a one way anova test is the most appropriate test. 
+
+
+## State Hypothesis
+
+$H_o$: There is no difference in the mean resting heart rate during the semester among students in the three university programs
+
+
+$H_\alpha$: At least one university program has a different mean resting heart rate during the semester.
+
+## Set alpha
+
+The alpha chosen for this test is .05 as this is the most common in the literature. 
+
+## Calulcate test statistic
+
+
+
+```{r }
+
+# One way anova
+res.aov <- aov(`Resting heart rate during semester (BPM)` ~ Program, data = hr_data %>% nice_labels())
+
+
+anova_summary <- summary(res.aov)
+
+f_value <- round(anova_summary[[1]]["uni_prog", "F value"],2)
+p_value <- round(anova_summary[[1]]["uni_prog", "Pr(>F)"],2)
+
+
+#pairwise testing
+mean_hr_dur_semester_g1 <- hr_data %>% 
+  group_by(group1 = uni_prog) %>% 
+  summarise(group_1_mean = mean(rest_hr_dur_sem))
+
+mean_hr_dur_semester_g2 <- hr_data %>% 
+  group_by(group2 = uni_prog) %>% 
+  summarise(group_2_mean = mean(rest_hr_dur_sem))
+
+pairwise_results <- pairwise.t.test(hr_data$rest_hr_dur_sem, hr_data$uni_prog, p.adjust.method = "bonferroni") %>% 
+  broom::tidy() %>% 
+  mutate(p.value = round(p.value,2)) %>% 
+  left_join(mean_hr_dur_semester_g1) %>% 
+  left_join(mean_hr_dur_semester_g2) %>% 
+  mutate(difference_between_means = group_1_mean - group_2_mean)  %>% 
+  mutate(across(where(is.numeric),round,2)) 
+
+```
+The results for the one-way anova are presented in Table 3. There is a difference in the results between the resting heart-rate during the semester for the students in the three programs, F = `r f_value` and p = `r p_value`), meaning that the probability that this result occurred by chance alone was well below the .05 threshold chosen for this test. Since the value of the one-way anova was significant, a pairwise-comparison with Bonferroni adjustment was made in table 4. Here we find that the adjusted p-value for the comparison of means for Biomedical and Occupational Therapy students was `r pairwise_results %>% filter(group1 == "Biomedicine", group2 =="Occupational Therapy") %>% pull(p.value)  %>% round(2)`, suggesting that there is a statistically significant difference between these two groups.
+```{r}
+#anova table
+broom::tidy(res.aov) %>% 
+  as_tibble() %>% 
+  mutate(across(where(is.numeric),round,2)) %>% 
+  kable(caption = "One-Way Anova of of heart rate during semester across programs") %>% 
+  paper_kable_style()
+
+#pairwise table
+pairwise_results %>% 
+    select(`First program` = group1,`Mean` = group_1_mean,`Second program` = group2,`Mean ` = group_2_mean,`Difference between means` = difference_between_means,p.value) %>% 
+    kable(caption = "Pairwise comparison of heart rate during semester across programs with Bonferroni adjustment") %>% 
+  paper_kable_style()
+
+
+
+
+```
+
+
+
+## Reject or retain hypothesis
+
+As a result of the analysis of this test above, we have rejected the null hypothesis because there is a statistically significant difference between the Resting heart rate during semester of Occupational Therapy and Biomedical students.
+
+# Question 4 - Sleep during semester
+
+## Decide on most appropriate test
+
+Comparing the heart rate of the same individuals both during and after semester is an example of paired sample, and therefore a paired t-test is the most appropriate analysis.
+
+## State hypothesis 
+
+$H_o$: The average time spent sleeping by participants during the semester is equal to the average time spent sleeping outside of the semester.
+$H_\alpha$: The average time spent sleeping by participants during the semester is not equal to the mean time spent sleeping outside of the semester.
+
+## Set alpha
+
+The alpha chosen for this test is .05 as this is the most common in the literature.
+
+## Calulcate test statistic
+
+```{r }
+
+time_sleeping <- data %>% 
+  select(sleep_dur_sem,sleep_out_sem) %>% 
+  nice_labels() %>% 
+  pivot_longer(everything(),names_to = "variable", values_to = "values") %>% 
+  group_by(variable) %>% 
+     summarise(Respondents = n(),
+              Mean = round(mean(values)),
+              sd = round(sd(values))) 
+sem_mean_sleep <- time_sleeping %>% filter(variable == "Hours of sleep per day during semester (average)") 
+out_sem_sleep <- time_sleeping %>% filter(variable == "Hours of sleep per day outside semester (average)")
+```
+
+Table 5 shows that the average time spent sleeping for students in semester is `r sem_mean_sleep %>% pull(Mean)` minutes, whereas the average time spent sleeping outside of semester is `r out_sem_sleep %>% pull(Mean)`. To test if this value is significant we consider the results of a paired t-test in table 6. The p-value for this test is .00 which suggests that the difference between the two means is statistically significant.
+
+
+```{r}
+time_sleeping%>% 
+  kable(caption = "Time spent sleeping during and outside semester") %>% 
+  paper_kable_style() 
+
+
+result <- t.test(data$sleep_dur_sem, data$sleep_out_sem, paired=TRUE)
+
+broom::tidy(result) %>%
+    rename(`Difference between means` = estimate,
+           t = statistic) %>% 
+  as_tibble() %>% 
+  mutate(across(where(is.numeric),round,2)) %>%
+  kable(caption = "Results of paired t-test of Sleep during and outside of semester") %>% 
+  paper_kable_style() 
+
+```
+
+
+## Reject or retain hypothesis
+
+Because the two means are different we reject null hypothesis that the two means are the same
+
+# Question 5 University satisfaction and unviersity program
+
+## Decide on most appropriate test 
+
+Because we are comparing two categorical variables, the chi squared test is the most appropriate way to check if these variables are related. 
+
+## State hypothesis 
+
+$H_o$: University satisfaction status is independent of the university program.
+
+
+$H_\alpha$: University satisfaction status is dependent on the university program.
+
+## Set alpha 
+The alpha chosen for this test is .05 as this is the most common in the literature. 
+
+## Calulcate test statistic
+
+As shown in table 7, a similar number of participants are completely satisfied across all programs.
+```{r}
+
+data %>% 
+  select(uni_prog,uni_satisfaction_num) %>%
+  group_by(Program = uni_prog) %>% 
+     summarise(Participants = n(),
+              `Share completely satisfied (%)` = round(100*mean(uni_satisfaction_num)),
+              sd = sd(uni_satisfaction_num)) %>% 
+  kable(caption = "Share of participants completely satisfied across programs") %>% 
+  paper_kable_style() 
+
+
+```
+
+```{r}
+
+# Create a contingency table
+contingency_table <- table(data$uni_prog, data$uni_satisfaction)
+
+# Perform the Chi-Square Test of Independence
+test_result <- chisq.test(contingency_table)
+
+# Tidy the result
+chi_p_value <- tidy(test_result) %>% as_tibble() %>% mutate(p.value = round(p.value,2)) %>% pull(p.value)
+chi_x_value <- tidy(test_result) %>% as_tibble() %>% mutate(x = round(statistic,2)) %>% pull(x)
+
+```
+
+ A chi-squared test was performed, and $\chi 2$ is `r chi_x_value` p-value is `r chi_p_value`, it appears the values are not statistically significantly different. 
+
+## Reject or retain hypothesis
+
+Given the p-value is less than .05, we fail to reject the null hypothesis that satisfaction is independent of program.
+
+
+# Question 6
+
+## Decide on most appropriate test 
+
+Given we are testing the effect of multiple variables on a continuous outcome variable (Resting heart rate outside of semester) a linear regression is the most appropriate test.
+
+The equation for the regression is:
+```{r}
+
+
+output <- lm(`Resting heart rate outside of semester (BPM)` ~ Age + `Steps per day during semester (average)` + `Exercise during semsester (minutes per week)` + `Final grade (%)`,
+             data = data_nice_labels)
+
+
+
+```
+
+$$
+\begin{split}
+\operatorname{`Resting\ heart\ rate\ outside\ of\ semester\ (BPM)`} = \alpha +\\ \beta_{1}(\operatorname{Age}) +\\ \beta_{2}(\operatorname{`Steps\ per\ day\ during\ semester\ (average)`}) +\\ \beta_{3}(\operatorname{`Exercise\ during\ semsester\ (minutes\ per\ week)`}) +\\ \beta_{4}(\operatorname{`Final\ grade\ (\%)`}) +\\ \epsilon
+\end{split}
+$$
+
+## State hypothesis 
+
+$H_o$: Resting heart rate outside of semester is not correlated with age, steps per day during semester, exercise during semester or final grade
+
+
+$H_\alpha$: Resting heart rate outside of semester is correlated with any of age, steps per day during semester, exercise during semester or final grade
+
+
+## Set alpha 
+The alpha chosen for this test is .05 as this is the most common in the literature. 
+
+## Calulcate test statistic
+The results in the table 8 show that after controlling for exercise, steps per day, and final grade, resting heart rate in this population is 1.8 beats per minute lower for every year of extra age. The p-value for this estimate is less than .001, suggesting a statistically significant relationship. For all other variables p is greater than .05 and there is therefore no evidence of a relationship.
+
+```{r}
+
+gt_table_regression <- tbl_regression(output) %>% 
+  add_glance_source_note() %>% 
+  modify_caption("Results of linear regression against resting hear-rate outside of semester")
+
+foootnote_1 <- gt_table_regression$table_styling$source_note[1]
+gt_table_regression %>% as_kable_extra() %>% paper_kable_style() %>% 
+  kableExtra::add_footnote(foootnote_1, notation="none",threeparttable = T) 
+
+
+
+```
+
+This model underwent several robustness tests and their results in figure 4. In the first plot that the residuals are evenly spread above and below the fitted line, suggesting normality. In the second (Normal Q-Q) plot the residuals form a straight line without much deviation, and the third plot shows even spread across the fitted line - suggesting minimal heteroskedasticity. In the final graph there are few outliers that have significant residuals on the model. While not perfect outputs, these four tests suggest high robustness of the model.   
+
+```{r}
+
+p <- autoplot(output) 
+gridExtra::grid.arrange(grobs = p@plots, top = "Figure 4 - Robustness checks for linear model")
+
+```
+
+## Reject or retain hypothesis
+
+Since there is a statistically significant relationship between age and heart-rate, we have rejected hte null-hypothesis.
+
