@@ -45,8 +45,7 @@ library(moments)
 library(broom)
 library(ggfortify)
 file_path <- "data/Smartwatch_StudentData_SP2.sav"
-data <- haven::read_spss(file_path)
-source_data_sj <- sjlabelled::read_spss(file_path)
+
 
 nice_labels_lookup <- c(
           `Watch brand` = "watch_brand",
@@ -126,12 +125,15 @@ data <- foreign::read.spss("data/Smartwatch_StudentData_SP2.sav",
 data_nice_labels <- data %>% 
   nice_labels()
 
+hr_data <- data %>% 
+  filter(uni_prog != "Dentistry") 
+
 ```
 
 
 To aid reproducibility, the source rmarkdown for this assignment has been provided online at 
 
-https://github.com/jonathananolan/TM5516_assignment_2
+[https://github.com/jonathananolan/TM5516_assignment_2](https://github.com/jonathananolan/TM5516_assignment_2)
 
 # Question 1 -  Summary statistics
 ```{r}
@@ -146,9 +148,9 @@ age_max <- data %>% summarise(age = round(max(age))) %>% pull(age)
 
 satis <- data %>% summarise(satisfied = round(mean(100*uni_satisfaction_num))) %>% pull(satisfied)
 
-rest_hr <- data %>% summarise(hr = round(mean(rest_hr_out_sem))) %>% pull(hr)
-steps <- data %>% summarise(hr = round(mean(steps_out_sem))) %>% pull(hr)
-exercise <- data %>% summarise(hr = round(mean(exercise_out_sem))) %>% pull(hr)
+rest_hr <- data %>% summarise(ave = round(mean(rest_hr_out_sem))) %>% pull(ave)
+steps <- data %>% summarise(ave = round(mean(steps_out_sem))) %>% pull(ave) %>% prettyNum(big.mark = ",")
+exercise <- data %>% summarise(ave = round(mean(exercise_out_sem))) %>% pull(ave)
 
 worst_student <- data %>% summarise(final_grd = round(min(final_grd))) %>% pull(final_grd)
 best_student <- data %>% summarise(final_grd = round(max(final_grd))) %>% pull(final_grd)
@@ -161,13 +163,13 @@ A total of `r n_part` students across four JCU programs participated in the stud
 The average age of participants was `r age_mean`. The youngest participant was `r age_min` and the oldest participant `r age_max`. Participants were spread across all programs, as shown in Table 1. `r satis`% of students were completely satisfied with University.  
 
 
-Participants had a average resting heart rate outside of semester of `r rest_hr`, took an average `r steps` per day and exercised `r exercise` minutes per week. 
+Participants had a average resting heart rate outside of semester of `r rest_hr`, took an average `r steps` steps per day and exercised `r exercise` minutes per week. 
 
 
 
-Samsung was the most popular watch brand, with `r watches %>% filter(watch_brand == "Samsung") %>% pull(n)` participants wearing this watch, while watches other than Samsung, Garmin or Apple were least popular, with only`r watches %>% filter(watch_brand == "Others") %>% pull(n)` wearing these brands. 
+Samsung was the most popular watch brand, with `r watches %>% filter(watch_brand == "Samsung") %>% pull(n)` participants wearing this watch, while watches other than Samsung, Garmin or Apple were least popular, with only `r watches %>% filter(watch_brand == "Others") %>% pull(n)` wearing these brands. 
 
-Performance varied widely across the cohort, with the lowest participant scoring `r worst_student` and the best scoring `r best_student`. Full summary variables across each program are provided in Table 1. 
+Performance at university varied widely across the cohort, with the lowest participant scoring `r worst_student` and the best scoring `r best_student` for their final grade. Full summary variables across each program are provided in Table 1. 
 
 ```{r }
  table_one_data <- data %>% select(age,
@@ -198,7 +200,7 @@ Performance varied widely across the cohort, with the lowest participant scoring
 
 # Quesiton 2 - Correlations between variables
 
-Pearson correlations for each variable are provided in Graph 1. Where a value is large and green it is suggestive of a positive correlation, whereas when values are large and red it is suggestive of a negative correlation. There appears to be a strong correlation between all measures of exercise and sleep both in and out of semester. Mid-term and final grade area also correlated. Resting heart-rate is negatively correlated with age. These data that made Graph 1 are also provided in table 2 below:
+Pearson correlations for each variable are provided in Figure 1. Where a value is large and green it is suggestive of a positive correlation, whereas when values are large and red it is suggestive of a negative correlation. There appears to be a strong correlation between all measures of exercise and sleep both in and out of semester. Mid-term and final grade area also correlated. Resting heart-rate is negatively correlated with age. These data that made Figure 1 are also provided in Table 2.
 
 
 
@@ -258,9 +260,6 @@ To decide on the most appropriate statistical test, the data was first assessed 
 
 ```{r distribution of results`}
 
-hr_data <- data %>% 
-  filter(uni_prog != "Dentistry") 
-
 hr_data %>% 
   group_by(rest_hr_dur_sem,uni_prog) %>% 
   summarise(n=n()) %>% 
@@ -313,8 +312,8 @@ res.aov <- aov(`Resting heart rate during semester (BPM)` ~ Program, data = hr_d
 
 anova_summary <- summary(res.aov)
 
-f_value <- round(anova_summary[[1]]["uni_prog", "F value"],2)
-p_value <- round(anova_summary[[1]]["uni_prog", "Pr(>F)"],2)
+f_value <- round(anova_summary[[1]]["Program", "F value"],2)
+p_value <- round(anova_summary[[1]]["Program", "Pr(>F)"],2)
 
 
 #pairwise testing
@@ -335,7 +334,9 @@ pairwise_results <- pairwise.t.test(hr_data$rest_hr_dur_sem, hr_data$uni_prog, p
   mutate(across(where(is.numeric),round,2)) 
 
 ```
-The results for the one-way anova are presented in Table 3. There is a difference in the results between the resting heart-rate during the semester for the students in the three programs, F = `r f_value` and p = `r p_value`), meaning that the probability that this result occurred by chance alone was well below the .05 threshold chosen for this test. Since the value of the one-way anova was significant, a pairwise-comparison with Bonferroni adjustment was made in table 4. Here we find that the adjusted p-value for the comparison of means for Biomedical and Occupational Therapy students was `r pairwise_results %>% filter(group1 == "Biomedicine", group2 =="Occupational Therapy") %>% pull(p.value)  %>% round(2)`, suggesting that there is a statistically significant difference between these two groups.
+
+The results for the one-way anova are presented in Table 3. There is a difference in the results between the resting heart-rate during the semester for the students in the three programs, F = `r f_value` and p = `r p_value`), meaning that the probability that this result occurred by chance alone was well below the .05 threshold chosen for this test. Since the value of the one-way anova was significant, a pairwise-comparison with Bonferroni adjustment was made in Table 4. Here we find that the adjusted p-value for the comparison of means for Biomedical and Occupational Therapy students was `r pairwise_results %>% filter(group1 == "Biomedicine", group2 =="Occupational Therapy") %>% pull(p.value)  %>% round(2)`, suggesting that there is a statistically significant difference between these two groups.
+
 ```{r}
 #anova table
 broom::tidy(res.aov) %>% 
@@ -370,6 +371,7 @@ Comparing the heart rate of the same individuals both during and after semester 
 ## State hypothesis 
 
 $H_o$: The average time spent sleeping by participants during the semester is equal to the average time spent sleeping outside of the semester.
+
 $H_\alpha$: The average time spent sleeping by participants during the semester is not equal to the mean time spent sleeping outside of the semester.
 
 ## Set alpha
@@ -392,7 +394,7 @@ sem_mean_sleep <- time_sleeping %>% filter(variable == "Hours of sleep per day d
 out_sem_sleep <- time_sleeping %>% filter(variable == "Hours of sleep per day outside semester (average)")
 ```
 
-Table 5 shows that the average time spent sleeping for students in semester is `r sem_mean_sleep %>% pull(Mean)` minutes, whereas the average time spent sleeping outside of semester is `r out_sem_sleep %>% pull(Mean)`. To test if this value is significant we consider the results of a paired t-test in table 6. The p-value for this test is .00 which suggests that the difference between the two means is statistically significant.
+Table 5 shows that the average time spent sleeping for students in semester is `r sem_mean_sleep %>% pull(Mean)` minutes, whereas the average time spent sleeping outside of semester is `r out_sem_sleep %>% pull(Mean)`. To test if this value is significant we consider the results of a paired t-test in Table 6. The p-value for this test is .00 which suggests that the difference between the two means is statistically significant.
 
 
 ```{r}
@@ -436,7 +438,7 @@ The alpha chosen for this test is .05 as this is the most common in the literatu
 
 ## Calulcate test statistic
 
-As shown in table 7, a similar number of participants are completely satisfied across all programs.
+As shown in Table 7, a similar number of participants are completely satisfied across all programs.
 ```{r}
 
 data %>% 
@@ -453,7 +455,7 @@ data %>%
 
 ```{r}
 
-# Create a contingency table
+# Create a contingency Table
 contingency_table <- table(data$uni_prog, data$uni_satisfaction)
 
 # Perform the Chi-Square Test of Independence
@@ -465,7 +467,7 @@ chi_x_value <- tidy(test_result) %>% as_tibble() %>% mutate(x = round(statistic,
 
 ```
 
- A chi-squared test was performed, and $\chi 2$ is `r chi_x_value` p-value is `r chi_p_value`, it appears the values are not statistically significantly different. 
+ A chi-squared test was performed, and $\chi 2$ is `r chi_x_value` and the p-value is `r chi_p_value`. There is therefore no evidence from these tests that the values are significantly different. 
 
 ## Reject or retain hypothesis
 
@@ -507,7 +509,7 @@ $H_\alpha$: Resting heart rate outside of semester is correlated with any of age
 The alpha chosen for this test is .05 as this is the most common in the literature. 
 
 ## Calulcate test statistic
-The results in the table 8 show that after controlling for exercise, steps per day, and final grade, resting heart rate in this population is 1.8 beats per minute lower for every year of extra age. The p-value for this estimate is less than .001, suggesting a statistically significant relationship. For all other variables p is greater than .05 and there is therefore no evidence of a relationship.
+The results in Table 8 show that after controlling for exercise, steps per day, and final grade, resting heart rate in this population is 1.8 beats per minute lower for every year of extra age. The p-value for this estimate is less than .001, suggesting a statistically significant relationship. For all other variables p is greater than .05 and there is therefore no evidence of a relationship.
 
 ```{r}
 
@@ -523,7 +525,7 @@ gt_table_regression %>% as_kable_extra() %>% paper_kable_style() %>%
 
 ```
 
-This model underwent several robustness tests and their results in figure 4. In the first plot that the residuals are evenly spread above and below the fitted line, suggesting normality. In the second (Normal Q-Q) plot the residuals form a straight line without much deviation, and the third plot shows even spread across the fitted line - suggesting minimal heteroskedasticity. In the final graph there are few outliers that have significant residuals on the model. While not perfect outputs, these four tests suggest high robustness of the model.   
+This model underwent several robustness tests and their results in Figure 4. In the first plot that the residuals are evenly spread above and below the fitted line, suggesting normality. In the second (Normal Q-Q) plot the residuals form a straight line without much deviation, and the third plot shows even spread across the fitted line - suggesting minimal heteroskedasticity. In the final graph there are few outliers that have significant residuals on the model. While not perfect outputs, these four tests suggest high robustness of the model.   
 
 ```{r}
 
@@ -535,5 +537,5 @@ gridExtra::grid.arrange(grobs = p@plots, top = "Figure 4 - Robustness checks for
 
 ## Reject or retain hypothesis
 
-Since there is a statistically significant relationship between age and heart-rate, we have rejected hte null-hypothesis.
+Since there is a statistically significant relationship between age and heart-rate, we reject the null-hypothesis.
 
